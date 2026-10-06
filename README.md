@@ -56,8 +56,9 @@ use Ph20sr\WhatsApp\Webhook\Webhook;
 $webhook = new Webhook(getenv('WA_VERIFY_TOKEN'), getenv('WA_APP_SECRET'));
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {           // verificação no painel
-    echo $webhook->verifyChallenge($_GET) ?? http_response_code(403);
-    exit;
+    $challenge = $webhook->verifyChallenge($_GET);
+    http_response_code($challenge === null ? 403 : 200);
+    exit($challenge ?? '');
 }
 
 $events = $webhook->handle(file_get_contents('php://input'), $_SERVER['HTTP_X_HUB_SIGNATURE_256'] ?? null);
